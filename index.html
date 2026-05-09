@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Hero Kids - Pahlawan Lingkungan STEAM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap');
+
+        :root {
+            --primary: #4CAF50;
+            --secondary: #2196F3;
+            --accent: #FFC107;
+            --danger: #F44336;
+            --light: #F1F8E9;
+            --dark: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: url('https://lh3.googleusercontent.com/d/1s2FDLgdF1D9aPruGquj0vovhr-9PmX9N') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            overflow-x: hidden;
+            touch-action: manipulation;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka One', cursive;
+            margin: 0;
+        }
+
+        /* --- Animations --- */
+        @keyframes sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        @keyframes drift {
+            from { transform: translateX(-10vw); }
+            to { transform: translateX(110vw); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .cloud {
+            position: fixed;
+            z-index: -1;
+            opacity: 0.6;
+            animation: drift 30s linear infinite;
+        }
+
+        .logo-bounce {
+            width: 180px;
+            height: auto;
+            margin-bottom: 10px;
+            animation: bounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+        }
+
+        /* --- Layout Containers --- */
+        #app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(2px);
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- UI Elements --- */
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px #00000033;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px #00000033;
+        }
+
+        .btn-green { background: var(--primary); color: white; }
+        .btn-blue { background: var(--secondary); color: white; }
+        .btn-yellow { background: var(--accent); color: var(--dark); }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 600px;
+            margin: 20px 0;
+            border: 4px solid white;
+        }
+
+        /* --- Navbar --- */
+        #top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .xp-bar-bg {
+            width: 150px;
+            height: 15px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+        }
+
+        #xp-progress {
+            height: 100%;
+            background: linear-gradient(to right, #FFC107, #FF9800);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* --- Login Screen --- */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .avatar-option {
+            cursor: pointer;
+            border: 4px solid transparent;
+            border-radius: 15px;
+            padding: 10px;
+            transition: 0.2s;
+            background: #f9f9f9;
+        }
+
+        .avatar-option.selected {
+            border-color: var(--primary);
+            background: #e8f5e9;
+            transform: scale(1.05);
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #eee;
+            width: 100%;
+            font-size: 1.1rem;
+            text-align: center;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* --- Game 1: Sorting --- */
+        .sorting-area {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .bin {
+            width: 160px;
+            height: 200px;
+            border: 5px dashed #fff;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.4);
+            transition: 0.3s;
+        }
+
+        .bin.organic { border-color: #8BC34A; }
+        .bin.non-organic { border-color: #03A9F4; }
+
+        .items-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            min-height: 120px;
+            padding: 20px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 20px;
+            width: 100%;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .trash-item {
+            width: 70px;
+            height: 70px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 40px;
+            transition: transform 0.2s;
+        }
+
+        .trash-item:active { cursor: grabbing; }
+
+        /* --- Game 2: Composter --- */
+        .composter-container {
+            position: relative;
+            width: 300px;
+            height: 350px;
+        }
+
+        .composter-svg { width: 100%; height: 100%; }
+
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .ing-btn {
+            background: white;
+            border: 3px solid #eee;
+            border-radius: 15px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: 0.3s;
+        }
+
+        .ing-btn:hover { background: #f0f0f0; transform: translateY(-3px); }
+
+        /* --- Game 3: Green City --- */
+        .city-canvas {
+            width: 100%;
+            height: 400px;
+            background: #e1f5fe;
+            border: 8px solid #fff;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: background 1s;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .city-item {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: grab;
+            background: #f5f5f5;
+        }
+
+        .indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.8);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        /* --- Results & Modal --- */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 6px solid var(--primary);
+        }
+
+        .badge-list {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badge-icon {
+            width: 80px;
+            height: 80px;
+            background: #f9f9f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 3px solid #eee;
+            filter: grayscale(1);
+        }
+
+        .badge-icon.unlocked {
+            filter: grayscale(0);
+            border-color: var(--accent);
+            background: #FFFDE7;
+            animation: bounce 2s infinite;
+        }
+
+        /* --- Feedback AI --- */
+        .ai-feedback {
+            background: #E3F2FD;
+            border-left: 10px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-style: italic;
+            text-align: left;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 600px) {
+            .sorting-area { flex-direction: column; align-items: center; gap: 10px; }
+            .btn { font-size: 1rem; padding: 10px 20px; }
+            #app-container { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Elements -->
+    <div class="cloud" style="top: 5%; animation-duration: 40s;">☁️</div>
+    <div class="cloud" style="top: 20%; animation-duration: 35s;">☁️</div>
+    <div class="cloud" style="top: 12%; animation-duration: 55s;">☁️</div>
+
+    <div id="app-container">
+        
+        <!-- Top Navigation / Stats -->
+        <div id="top-bar" style="display: none;">
+            <div class="stats-item">
+                <span id="player-label">👤 Pahlawan: -</span>
+                <div class="xp-bar-bg">
+                    <div id="xp-progress"></div>
+                </div>
+                <small>Level <span id="player-level">1</span> (XP: <span id="player-xp">0</span>)</small>
+            </div>
+            <div id="sound-control">
+                <button class="btn btn-yellow" onclick="toggleMusic()" style="padding: 8px 15px; font-size: 0.9rem;">
+                    🔊 Musik: Nyala
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. LOGIN SCREEN (SPLASH SCREEN) -->
+        <div id="screen-login" class="screen active">
+            <!-- Game Logo with Bounce Effect -->
+            <img src="https://lh3.googleusercontent.com/d/1xFEq5b80S8cAuV_KmD4xVmQ2GOHoJbeJ" alt="Eco Hero Logo" class="logo-bounce">
+            
+            <h1 style="color: #2E7D32; font-size: 3.5rem; text-shadow: 3px 3px white; margin-bottom: 5px;">Eco Hero Kids</h1>
+            <p style="background: rgba(255,255,255,0.7); padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 15px;">Selamat datang, Calon Pahlawan Lingkungan!</p>
+            
+            <div class="card">
+                <h3>Siapa namamu?</h3>
+                <input type="text" id="input-name" placeholder="Ketik nama di sini...">
+                
+                <h3>Pilih Avatarmu:</h3>
+                <div class="avatar-grid">
+                    <div class="avatar-option selected" onclick="selectAvatar(this, '👦')">
+                        <span style="font-size: 3rem;">👦</span>
+                    </div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '👧')">
+                        <span style="font-size: 3rem;">👧</span>
+                    </div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🦊')">
+                        <span style="font-size: 3rem;">🦊</span>
+                    </div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🐼')">
+                        <span style="font-size: 3rem;">🐼</span>
+                    </div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🐱')">
+                        <span style="font-size: 3rem;">🐱</span>
+                    </div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🤖')">
+                        <span style="font-size: 3rem;">🤖</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-green" onclick="startGame()">Mulai Petualangan! 🚀</button>
+            </div>
+        </div>
+
+        <!-- 2. MAIN MENU -->
+        <div id="screen-menu" class="screen">
+            <div class="card" style="max-width: 800px;">
+                <h2 style="color: var(--primary);">Pilih Misimu Hari Ini!</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                    <button class="btn btn-blue" onclick="showScreen('screen-game1')">🗑️ Memilah Sampah</button>
+                    <button class="btn btn-green" onclick="showScreen('screen-game2')">🍃 Membuat Kompos</button>
+                    <button class="btn btn-yellow" onclick="showScreen('screen-game3')">🏙️ Bangun Kota Hijau</button>
+                    <button class="btn btn-blue" onclick="showScreen('screen-badges')">🏆 Galeri Badge</button>
+                    <button class="btn btn-green" onclick="showSertifikat()">📜 Cetak Sertifikat</button>
+                    <button class="btn btn-yellow" onclick="showAbout()">🧪 Tentang STEAM</button>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <svg width="150" height="150" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" fill="#C8E6C9" />
+                        <path d="M30 40 Q50 20 70 40 Q50 35 30 40" fill="#2E7D32" />
+                        <circle cx="40" cy="45" r="5" fill="#333" />
+                        <circle cx="60" cy="45" r="5" fill="#333" />
+                        <path d="M40 65 Q50 75 60 65" fill="none" stroke="#D32F2F" stroke-width="3" />
+                    </svg>
+                    <p id="menu-welcome-text" style="font-weight: bold; font-size: 1.2rem;">Halo Pahlawan!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. GAME 1: SORTING -->
+        <div id="screen-game1" class="screen">
+            <h2 style="color: white; text-shadow: 2px 2px var(--dark);">Misi 1: Pilah Sampahmu!</h2>
+            <p style="color: white; text-shadow: 1px 1px var(--dark);">Tarik sampah ke kotak yang benar sebelum waktu habis!</p>
+            
+            <div class="card" style="max-width: 800px;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px;">
+                    <span>Waktu: <span id="g1-timer">60</span>s</span>
+                    <span>Skor: <span id="g1-score">0</span></span>
+                </div>
+                
+                <div class="items-pool" id="g1-pool">
+                    <!-- Items generated by JS -->
+                </div>
+
+                <div class="sorting-area">
+                    <div class="bin organic" ondrop="drop(event, 'organic')" ondragover="allowDrop(event)">
+                        <div style="font-size: 3rem;">♻️</div>
+                        <strong>ORGANIK</strong>
+                        <small>(Alami)</small>
+                    </div>
+                    <div class="bin non-organic" ondrop="drop(event, 'non-organic')" ondragover="allowDrop(event)">
+                        <div style="font-size: 3rem;">📦</div>
+                        <strong>ANORGANIK</strong>
+                        <small>(Buatan)</small>
+                    </div>
+                </div>
+
+                <div id="g1-feedback" style="height: 40px; font-weight: bold;"></div>
+            </div>
+            <button class="btn btn-yellow" onclick="showScreen('screen-menu')">Kembali</button>
+        </div>
+
+        <!-- 4. GAME 2: COMPOST -->
+        <div id="screen-game2" class="screen">
+            <h2 style="color: white; text-shadow: 2px 2px var(--dark);">Misi 2: Koki Kompos</h2>
+            <p style="color: white; text-shadow: 1px 1px var(--dark);">Pilih bahan yang bisa jadi pupuk tanaman agar bumi subur!</p>
+            
+            <div class="card">
+                <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                    <div class="composter-container">
+                        <!-- Composter visual -->
+                        <div id="compost-level" style="position: absolute; bottom: 60px; left: 75px; width: 150px; height: 0; background: #5D4037; border-radius: 10px; transition: height 1s; opacity: 0.8;"></div>
+                        <svg viewBox="0 0 200 200" class="composter-svg">
+                            <rect x="50" y="50" width="100" height="120" rx="10" fill="#455A64" />
+                            <rect x="60" y="40" width="80" height="15" rx="5" fill="#37474F" />
+                            <circle cx="100" cy="110" r="25" fill="#263238" opacity="0.3" />
+                            <text x="100" y="115" font-size="20" text-anchor="middle" fill="white">♻️</text>
+                        </svg>
+                    </div>
+                    
+                    <div id="garden-view" style="width: 200px; height: 200px; background: #A1887F; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 5px solid #8D6E63; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                        <span id="garden-plant" style="font-size: 4rem; transition: 1s;">🕳️</span>
+                        <small style="color: white; font-weight: bold;">TANAH</small>
+                    </div>
+                </div>
+
+                <div class="ai-feedback" id="g2-ai">"Ayo masukkan bahan organik seperti sisa sayuran!"</div>
+
+                <div class="ingredients-grid">
+                    <button class="ing-btn" onclick="addCompost('🍃', true, 'Daun kering sangat baik untuk kompos!')">🍃</button>
+                    <button class="ing-btn" onclick="addCompost('🍌', true, 'Kulit pisang penuh nutrisi untuk tanah.')">🍌</button>
+                    <button class="ing-btn" onclick="addCompost('🥤', false, 'Plastik tidak bisa hancur, jangan dimasukkan!')">🥤</button>
+                    <button class="ing-btn" onclick="addCompost('🍎', true, 'Sisa buah adalah bahan kompos juara.')">🍎</button>
+                    <button class="ing-btn" onclick="addCompost('🔋', false, 'Baterai mengandung racun berbahaya!')">🔋</button>
+                    <button class="ing-btn" onclick="addCompost('🥦', true, 'Sayuran busuk akan menjadi pupuk hebat.')">🥦</button>
+                    <button class="ing-btn" onclick="addCompost('🥫', false, 'Kaleng logam butuh ratusan tahun untuk hancur.')">🥫</button>
+                    <button class="ing-btn" onclick="addCompost('🥚', true, 'Cangkang telur bikin tanah kaya kalsium.')">🥚</button>
+                    <button class="ing-btn" onclick="addCompost('💎', false, 'Kaca tidak bisa jadi kompos.')">💎</button>
+                </div>
+
+                <div id="g2-progress-text" style="margin-top: 15px; font-weight: bold;">Kemajuan: 0/5 bahan benar</div>
+            </div>
+            <button class="btn btn-yellow" onclick="showScreen('screen-menu')">Kembali</button>
+        </div>
+
+        <!-- 5. GAME 3: GREEN CITY -->
+        <div id="screen-game3" class="screen">
+            <h2 style="color: white; text-shadow: 2px 2px var(--dark);">Misi 3: Arsitek Kota Hijau</h2>
+            <p style="color: white; text-shadow: 1px 1px var(--dark);">Tarik benda ke peta. Jaga langit tetap biru dan warga bahagia!</p>
+            
+            <div class="card" style="max-width: 900px; padding: 15px;">
+                <div class="city-canvas" id="city-canvas" ondrop="dropCity(event)" ondragover="allowDrop(event)">
+                    <div class="indicator" id="city-status">Status: Kota Bersih 🌿</div>
+                    <!-- Items will appear here -->
+                </div>
+                
+                <div class="toolbar">
+                    <div class="tool" draggable="true" ondragstart="dragTool(event, '🌳', 'green')">🌳</div>
+                    <div class="tool" draggable="true" ondragstart="dragTool(event, '☀️', 'green')">☀️</div>
+                    <div class="tool" draggable="true" ondragstart="dragTool(event, '🚲', 'green')">🚲</div>
+                    <div class="tool" draggable="true" ondragstart="dragTool(event, '🏠', 'neutral')">🏠</div>
+                    <div class="tool" draggable="true" ondragstart="dragTool(event, '🏭', 'dirty')">🏭</div>
+                    <div class="tool" draggable="true" ondragstart="dragTool(event, '🚗', 'dirty')">🚗</div>
+                </div>
+
+                <div class="ai-feedback" id="city-ai">"Kota yang baik butuh keseimbangan antara bangunan dan pohon."</div>
+                
+                <button class="btn btn-green" onclick="finishCity()">Selesaikan Kota ✅</button>
+            </div>
+            <button class="btn btn-yellow" onclick="showScreen('screen-menu')">Kembali</button>
+        </div>
+
+        <!-- 6. BADGE GALLERY -->
+        <div id="screen-badges" class="screen">
+            <h2 style="color: white; text-shadow: 2px 2px var(--dark);">Galeri Badge</h2>
+            <div class="card">
+                <div class="badge-list">
+                    <div>
+                        <div class="badge-icon" id="badge-sorting">♻️</div>
+                        <p>Ahli Daur Ulang</p>
+                    </div>
+                    <div>
+                        <div class="badge-icon" id="badge-compost">🌿</div>
+                        <p>Pahlawan Kompos</p>
+                    </div>
+                    <div>
+                        <div class="badge-icon" id="badge-city">🏙️</div>
+                        <p>Arsitek Kota Hijau</p>
+                    </div>
+                </div>
+                <button class="btn btn-blue" onclick="showScreen('screen-menu')" style="margin-top: 30px;">Kembali Menu</button>
+            </div>
+        </div>
+
+        <!-- 7. ABOUT STEAM -->
+        <div id="screen-about" class="screen">
+            <h2 style="color: white; text-shadow: 2px 2px var(--dark);">Tentang STEAM</h2>
+            <div class="card" style="text-align: left;">
+                <p><strong>Science (Sains):</strong> Mempelajari proses alam seperti pembusukan kompos.</p>
+                <p><strong>Technology (Teknologi):</strong> Menggunakan panel surya untuk energi bersih.</p>
+                <p><strong>Engineering (Teknik):</strong> Merancang tata kota yang efisien.</p>
+                <p><strong>Art (Seni):</strong> Berkreasi menata kota dan desain lingkungan.</p>
+                <p><strong>Mathematics (Matematika):</strong> Menghitung skor dan membagi kategori sampah.</p>
+                <center><button class="btn btn-yellow" onclick="showScreen('screen-menu')">Mengerti!</button></center>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL OVERLAY -->
+    <div id="modal-overlay">
+        <div class="modal-content" id="modal-content">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENTS -->
+    <audio id="snd-correct" src="data:audio/wav;base64,UklGRmCCAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YV6CAAAAAAAAAAAAAAAA"></audio>
+    <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3"></audio>
+
+    <script>
+        // --- State Management ---
+        let player = {
+            name: "",
+            avatar: "👦",
+            xp: 0,
+            level: 1,
+            badges: {
+                sorting: false,
+                compost: false,
+                city: false
+            }
+        };
+
+        const trashData = [
+            { id: 1, name: "Botol Plastik", emoji: "🍼", type: "non-organic" },
+            { id: 2, name: "Daun Kering", emoji: "🍂", type: "organic" },
+            { id: 3, name: "Kulit Pisang", emoji: "🍌", type: "organic" },
+            { id: 4, name: "Kaleng", emoji: "🥫", type: "non-organic" },
+            { id: 5, name: "Sisa Nasi", emoji: "🍚", type: "organic" },
+            { id: 6, name: "Baterai", emoji: "🔋", type: "non-organic" },
+            { id: 7, name: "Botol Kaca", emoji: "🍾", type: "non-organic" },
+            { id: 8, name: "Sedotan", emoji: "🥤", type: "non-organic" }
+        ];
+
+        let musicPlaying = false;
+        let gameTimer;
+        let currentScore = 0;
+        let compostCorrectCount = 0;
+        let cityPollution = 0;
+
+        // --- Core Functions ---
+
+        window.onload = () => {
+            const saved = localStorage.getItem('ecoHeroData');
+            if(saved) {
+                const data = JSON.parse(saved);
+                // Kita bisa meload progress tapi untuk demo ini biarkan input nama
+            }
+        };
+
+        function selectAvatar(el, icon) {
+            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+            player.avatar = icon;
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('input-name').value.trim();
+            if(!nameInput) {
+                alert("Masukkan namamu dulu ya!");
+                return;
+            }
+            player.name = nameInput;
+            updateStatsUI();
+            document.getElementById('top-bar').style.display = 'flex';
+            document.getElementById('menu-welcome-text').innerText = `Halo Pahlawan ${player.name}! Mari selamatkan bumi!`;
+            showScreen('screen-menu');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            if(screenId === 'screen-game1') initGame1();
+            if(screenId === 'screen-game2') initGame2();
+            if(screenId === 'screen-game3') initGame3();
+            if(screenId === 'screen-badges') updateBadgesUI();
+        }
+
+        function updateStatsUI() {
+            document.getElementById('player-label').innerText = `👤 ${player.avatar} ${player.name}`;
+            document.getElementById('player-xp').innerText = player.xp;
+            document.getElementById('player-level').innerText = player.level;
+            const progress = (player.xp % 100);
+            document.getElementById('xp-progress').style.width = progress + '%';
+        }
+
+        function addXp(amount) {
+            player.xp += amount;
+            const newLevel = Math.floor(player.xp / 100) + 1;
+            if(newLevel > player.level) {
+                player.level = newLevel;
+                showModal("Naik Level!", `🎉 Selamat! Kamu sekarang Level ${player.level}!`, "Hebat!");
+            }
+            updateStatsUI();
+            localStorage.setItem('ecoHeroData', JSON.stringify(player));
+        }
+
+        function toggleMusic() {
+            const bgm = document.getElementById('bg-music');
+            if(musicPlaying) {
+                bgm.pause();
+                document.getElementById('sound-control').querySelector('button').innerText = "🔇 Musik: Mati";
+            } else {
+                bgm.play().catch(e => console.log("Audio play deferred"));
+                document.getElementById('sound-control').querySelector('button').innerText = "🔊 Musik: Nyala";
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        function playSfx(type) {
+            console.log("SFX:", type);
+        }
+
+        // --- Game 1 Logic ---
+        function initGame1() {
+            currentScore = 0;
+            document.getElementById('g1-score').innerText = "0";
+            document.getElementById('g1-timer').innerText = "60";
+            document.getElementById('g1-feedback').innerText = "";
+            const pool = document.getElementById('g1-pool');
+            pool.innerHTML = '';
+            
+            const shuffled = [...trashData].sort(() => Math.random() - 0.5);
+            shuffled.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'trash-item';
+                div.draggable = true;
+                div.id = `trash-${item.id}`;
+                div.innerText = item.emoji;
+                div.dataset.type = item.type;
+                div.dataset.name = item.name;
+                div.ondragstart = drag;
+                pool.appendChild(div);
+            });
+
+            let timeLeft = 60;
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('g1-timer').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(gameTimer);
+                    finishGame1();
+                }
+            }, 1000);
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev, binType) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const item = document.getElementById(data);
+            const feedback = document.getElementById('g1-feedback');
+
+            if(item.dataset.type === binType) {
+                currentScore += 10;
+                document.getElementById('g1-score').innerText = currentScore;
+                feedback.innerText = "✅ Benar! " + item.dataset.name + " ke tempat yang pas.";
+                feedback.style.color = "green";
+                item.remove();
+                addXp(5);
+                
+                if(document.getElementById('g1-pool').children.length === 0) {
+                    clearInterval(gameTimer);
+                    finishGame1();
+                }
+            } else {
+                feedback.innerText = "❌ Ups! " + item.dataset.name + " bukan di situ.";
+                feedback.style.color = "red";
+                item.style.transform = "scale(1.2)";
+                setTimeout(() => item.style.transform = "scale(1)", 200);
+            }
+        }
+
+        function finishGame1() {
+            const total = trashData.length;
+            const collected = (total - document.getElementById('g1-pool').children.length);
+            const percent = Math.round((collected / total) * 100);
+            
+            let msg = percent >= 80 ? "Luar biasa! Kamu ahli daur ulang!" : "Bagus! Terus berlatih ya!";
+            if(percent === 100) player.badges.sorting = true;
+
+            showModal("Misi Selesai!", 
+                `Skor: ${currentScore}<br>Keberhasilan: ${percent}%<br>${msg}`, 
+                "Lanjut Level 2", () => showScreen('screen-game2'));
+        }
+
+        // --- Game 2 Logic ---
+        function initGame2() {
+            compostCorrectCount = 0;
+            document.getElementById('compost-level').style.height = "0";
+            document.getElementById('garden-plant').innerText = "🕳️";
+            document.getElementById('g2-progress-text').innerText = "Kemajuan: 0/5 bahan benar";
+            document.getElementById('g2-ai').innerText = "Ayo masukkan bahan organik seperti sisa sayuran!";
+        }
+
+        function addCompost(emoji, isCorrect, tip) {
+            const ai = document.getElementById('g2-ai');
+            if(isCorrect) {
+                compostCorrectCount++;
+                ai.innerText = "Hebat! " + tip;
+                ai.style.color = "#2E7D32";
+                
+                const h = (compostCorrectCount / 5) * 150;
+                document.getElementById('compost-level').style.height = h + "px";
+                
+                if(compostCorrectCount === 3) document.getElementById('garden-plant').innerText = "🌱";
+                if(compostCorrectCount === 5) {
+                    document.getElementById('garden-plant').innerText = "🌳";
+                    player.badges.compost = true;
+                    addXp(50);
+                    showModal("Pupuk Jadi!", "Wah! Tanaman tumbuh subur berkat komposmu. Kamu dapat Badge Pahlawan Kompos! 🌿", "Lanjut Level 3", () => showScreen('screen-game3'));
+                }
+                addXp(10);
+            } else {
+                ai.innerText = "Aduh! " + tip;
+                ai.style.color = "red";
+            }
+            document.getElementById('g2-progress-text').innerText = `Kemajuan: ${compostCorrectCount}/5 bahan benar`;
+        }
+
+        // --- Game 3 Logic ---
+        function initGame3() {
+            cityPollution = 0;
+            const canvas = document.getElementById('city-canvas');
+            canvas.innerHTML = '<div class="indicator" id="city-status">Status: Kota Bersih 🌿</div>';
+            canvas.style.background = "#e1f5fe";
+            updateCityStatus();
+        }
+
+        let draggedTool = null;
+        function dragTool(ev, emoji, type) {
+            draggedTool = { emoji, type };
+        }
+
+        function dropCity(ev) {
+            ev.preventDefault();
+            const canvas = document.getElementById('city-canvas');
+            const rect = canvas.getBoundingClientRect();
+            const x = ev.clientX - rect.left - 20;
+            const y = ev.clientY - rect.top - 20;
+
+            const div = document.createElement('div');
+            div.className = 'city-item';
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+            div.style.fontSize = '40px';
+            div.innerText = draggedTool.emoji;
+            
+            if(draggedTool.type === 'dirty') cityPollution += 15;
+            if(draggedTool.type === 'green') cityPollution -= 10;
+            
+            canvas.appendChild(div);
+            updateCityStatus();
+        }
+
+        function updateCityStatus() {
+            const status = document.getElementById('city-status');
+            const ai = document.getElementById('city-ai');
+            const canvas = document.getElementById('city-canvas');
+
+            if(cityPollution < 0) cityPollution = 0;
+
+            if(cityPollution > 50) {
+                status.innerText = "Status: Polusi Tinggi! 🌫️";
+                status.style.color = "red";
+                canvas.style.background = "#B0BEC5";
+                ai.innerText = "Waduh, terlalu banyak pabrik dan mobil! Ayo tanam pohon.";
+            } else if(cityPollution > 20) {
+                status.innerText = "Status: Cukup Baik ☁️";
+                status.style.color = "orange";
+                canvas.style.background = "#CFD8DC";
+                ai.innerText = "Kota mulai berasap. Tambahkan panel surya atau jalur sepeda.";
+            } else {
+                status.innerText = "Status: Kota Bersih 🌿";
+                status.style.color = "green";
+                canvas.style.background = "#e1f5fe";
+                ai.innerText = "Bagus sekali! Udara di sini segar. Burung-burung suka!";
+            }
+        }
+
+        function finishCity() {
+            if(cityPollution <= 20) {
+                player.badges.city = true;
+                addXp(100);
+                showModal("Kota Selesai!", "Selamat Arsitek! Kotamu sangat ramah lingkungan. Warga sangat senang! 🏙️", "Kembali Menu", () => showScreen('screen-menu'));
+            } else {
+                showModal("Belum Cukup Hijau", "Kotamu masih terlalu banyak polusi. Ayo tambahkan lebih banyak pohon dan energi surya!", "Perbaiki Kota");
+            }
+        }
+
+        // --- Badge & Certificate Logic ---
+        function updateBadgesUI() {
+            if(player.badges.sorting) document.getElementById('badge-sorting').classList.add('unlocked');
+            if(player.badges.compost) document.getElementById('badge-compost').classList.add('unlocked');
+            if(player.badges.city) document.getElementById('badge-city').classList.add('unlocked');
+        }
+
+        function showSertifikat() {
+            const completed = Object.values(player.badges).filter(v => v).length;
+            if(completed < 3) {
+                showModal("Belum Lengkap", `Kamu perlu menyelesaikan semua misi (3/3) untuk dapat sertifikat. Kamu baru menyelesaikan ${completed}/3 misi.`, "Siap!");
+                return;
+            }
+
+            const html = `
+                <div style="border: 10px double var(--primary); padding: 20px; font-family: 'Fredoka One';">
+                    <h1 style="color: var(--primary);">SERTIFIKAT ECO HERO</h1>
+                    <p>Diberikan dengan bangga kepada:</p>
+                    <h2 style="font-size: 2.5rem; text-decoration: underline;">${player.name}</h2>
+                    <p>Telah menyelesaikan semua misi pembelajaran STEAM dan resmi menjadi</p>
+                    <h3 style="color: #FF9800;">PAHLAWAN LINGKUNGAN CILIK</h3>
+                    <div style="font-size: 3rem; margin: 20px;">🏅 🌳 🌍</div>
+                    <p><em>"Menjaga bumi, menjaga masa depan!"</em></p>
+                    <button class="btn btn-green" onclick="window.print()">Cetak / Simpan PDF</button>
+                    <button class="btn btn-yellow" onclick="closeModal()">Tutup</button>
+                </div>
+            `;
+            showModalCustom(html);
+        }
+
+        function showAbout() {
+            showScreen('screen-about');
+        }
+
+        // --- Modals ---
+        function showModal(title, text, btnText, callback) {
+            const content = `
+                <h2 style="color: var(--primary);">${title}</h2>
+                <p style="font-size: 1.2rem; margin: 20px 0;">${text}</p>
+                <button class="btn btn-green" id="modal-btn">${btnText}</button>
+            `;
+            showModalCustom(content);
+            document.getElementById('modal-btn').onclick = () => {
+                closeModal();
+                if(callback) callback();
+            };
+        }
+
+        function showModalCustom(html) {
+            document.getElementById('modal-content').innerHTML = html;
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
